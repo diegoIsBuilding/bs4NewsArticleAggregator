@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import random
 
 def fetch_source_one_article():
-    url = 'https://bitcoinmagazine.com/articles'
+    url = 'https://newuniversity.org/category/news/campus-news/'
     user_agents = [
         'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36',
         'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36',
@@ -19,7 +19,7 @@ def fetch_source_one_article():
     ]
     headers = {
         'User-Agent': random.choice(user_agents),
-        'Referer': 'https://bitcoinmagazine.com/'
+        'Referer': 'https://newuniversity.org/'
     }
     
     try:
@@ -29,8 +29,19 @@ def fetch_source_one_article():
         response.raise_for_status()
         
         soup = BeautifulSoup(response.text, 'lxml')
-        headlines = soup.find_all('h2', class_='m-ellipsis--text m-card--header-text')
-        print(headlines)
+        headlines = soup.find_all('div', class_ = 'td-module-meta-info td-module-meta-info-bottom')
+        article_info = []
+        for headline in headlines: 
+            title = headline.contents[1].text.strip()
+            links = headline.find('a').get('href').strip()
+            authors = headline.find('span', class_ = 'td-post-author-name').find('a').text.strip()
+            date = headline.find('span', class_ = 'td-post-date').find('time').text.strip()
+            article_info.append(title)
+            article_info.append(links)
+            article_info.append(authors)
+            article_info.append(date)
+            
+        print(article_info)
         
         
     except requests.ConnectionError:
