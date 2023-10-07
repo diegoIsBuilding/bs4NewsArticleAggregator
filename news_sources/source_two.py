@@ -31,20 +31,28 @@ def fetch_source_two_article():
         soup = BeautifulSoup(response.text, 'lxml')
         vertical_cards = soup.find_all('div', class_ = 'css-1urk0hm')
         #horizontal_cards = soup.find_all('div', class_ = 'style_card__2hnxE')
-        article_info = []
         
         for vert_card in vertical_cards:
+            article_info = []
             campus_tag = vert_card.find('h2', class_ = 'css-mhukz7')
             if campus_tag:
-                titles = vert_card.find('div', class_ = 'css-u3qgkr').text.strip()
-                links = vert_card.find('a', style="text-decoration:none").get('href').strip()
-                authors = vert_card.find('h3', class_ = 'css-fwulup').find('a', href = '/author/catherine-hamilton')
-                dates = vert_card.find('span', class_ = 'css-7zra3w').text.strip()
+                title_tag = vert_card.find('div', class_ = 'css-u3qgkr')
+                titles = title_tag.text.strip() if title_tag else 'Unknown'
+
+                link_tag = vert_card.find('a', style="text-decoration:none")
+                links = link_tag.get('href').strip() if link_tag else 'Unknown'
+
+                author_tag = vert_card.find('h3', class_ = 'css-fwulup').find('a') if vert_card.find('h3', class_ = 'css-fwulup') else None
+                authors = author_tag.text if author_tag else 'Unknown'
+
+                date_tag = vert_card.find('span', class_ = 'css-7zra3w')
+                dates = date_tag.text.strip() if date_tag else 'Unknown'
+
                 article_info.append(titles)
                 article_info.append(links)
                 article_info.append(authors)
                 article_info.append(dates)
-            print(article_info)
+                print(article_info)
         
         
     except requests.ConnectionError:
