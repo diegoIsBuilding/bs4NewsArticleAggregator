@@ -31,11 +31,9 @@ def fetch_source_two_article():
         soup = BeautifulSoup(response.text, 'lxml')
         vertical_cards = soup.find_all('div', class_ = 'css-1urk0hm')
         horizontal_cards = soup.find_all('div', class_ = 'style_card__2hnxE')
-        
+        article_info = []
         for vert_card in vertical_cards:
-            article_info = []
             vert_campus_tag = vert_card.find('h2', class_ = 'css-mhukz7').text
-            print(vert_campus_tag)
             if vert_campus_tag == 'Campus':
                 small_title_tag = vert_card.find('div', class_ = 'css-1or0iyk')
                 large_title_tag = vert_card.find('div', class_ = 'css-u3qgkr')
@@ -44,59 +42,66 @@ def fetch_source_two_article():
                 elif large_title_tag:
                     titles = large_title_tag.text.strip()
                 else:
-                    'Unknown'
+                    titles = 'Unknown'
+                
 
                 link_tag = vert_card.find('a', style="text-decoration:none")
                 if link_tag:
                     links = link_tag.get('href').strip()
-                else: 'Unknown'
+                else: links = 'Unknown'
 
-                small_author_tag = vert_card.find('h3', class_ = 'css-122uc6i').find('a')
-                large_author_tag = vert_card.find('h3', class_ = 'css-fwulup').find('a') 
-                if small_author_tag:
-                    authors = small_author_tag.text.strip()
-                elif large_author_tag:
+                small_author_tag = vert_card.find('h3', class_ = 'css-122uc6i')
+                large_author_tag = vert_card.find('h3', class_ = 'css-fwulup')
+                if large_author_tag:
                     authors = large_author_tag.text.strip()
-                else: 'Unknown'
+                elif small_author_tag:
+                    authors = small_author_tag.text.strip()
+                else: authors = 'Unknown'
 
                 date_tag = vert_card.find('span', class_ = 'css-7zra3w')
                 if date_tag:
                     dates = date_tag.text.strip()
-                else: 'Unknown'
-            
-            for horiz_card in horizontal_cards:
-                horiz_campus_tag = horiz_card.find('h2', class_ = 'css-5yw8gm').text
-                if horiz_campus_tag == 'Campus':
-                    horiz_title_tag = horiz_card.find('h2', class_ = 'css-m9vgwi')
-                    if horiz_title_tag:
-                        horiz_titles = horiz_title_tag.text.strip()
-                    else: 'Unknown'
-                    
-                    horiz_link_tag = horiz_card.find('a', style="text-decoration:none")
-                    if horiz_link_tag:
-                        horiz_links = horiz_link_tag.get('href').strip()
-                    else: 'Unknown'
-                    
-                    horiz_author_tag = horiz_card.find('h3', class_ = 'css-yoisth').find('a')
-                    if horiz_author_tag:
-                        horiz_authors = horiz_author_tag.text.strip()
-                    else: 'Unknown'
-                    
-                    horiz_date_tag = horiz_card.find('span', class_ = 'css-1fg4j61')
-                    if horiz_date_tag:
-                        horiz_dates = horiz_date_tag.text.strip()
-                    else: 'Unknown'
-            
-
+                else: dates = 'Unknown'
                 article_info.append(titles)
                 article_info.append(links)
                 article_info.append(authors)
                 article_info.append(dates)
-                article_info.append(horiz_titles)
-                article_info.append(horiz_links)
-                article_info.append(horiz_authors)
-                article_info.append(horiz_dates)
-                print(article_info)
+        
+        
+        for horiz_card in horizontal_cards:
+            horiz_campus_tag = horiz_card.find('h2', class_ = 'css-5yw8gm')
+            if horiz_campus_tag:
+                print(horiz_campus_tag)
+                hc_tag = horiz_campus_tag.text
+                if hc_tag == 'Campus':
+                    horiz_title_tag = horiz_card.find('h1', class_ = 'css-m9vgwi')
+                    if horiz_title_tag:
+                        horiz_titles = horiz_title_tag.text.strip()
+                    else: horiz_titles = 'Unknown'
+                    
+                
+                    horiz_link_tag = horiz_card.find('a', style="text-decoration:none")
+                    if horiz_link_tag:
+                        horiz_links = horiz_link_tag.get('href').strip()
+                    else: horiz_links = 'Unknown'
+                    article_info.append(horiz_titles)
+                    article_info.append(horiz_links)
+                
+                    horiz_author_tag = horiz_card.find('h3', class_ = 'css-yoisth').find('a')
+                    if horiz_author_tag:
+                        horiz_authors = horiz_author_tag.text.strip()
+                    else: horiz_authors = 'Unknown'
+                    
+                
+                    horiz_date_tag = horiz_card.find('span', class_ = 'css-1fg4j61')
+                    if horiz_date_tag:
+                        horiz_dates = horiz_date_tag.text.strip()
+                    else: horiz_dates = 'Unknown'
+                    
+                    article_info.append(horiz_titles)
+                    article_info.append(horiz_links)
+                    article_info.append(horiz_authors)
+                    article_info.append(horiz_dates)
         
         
     except requests.ConnectionError:
