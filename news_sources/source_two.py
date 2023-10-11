@@ -1,6 +1,14 @@
 import requests
 from bs4 import BeautifulSoup
 import random
+import os
+import json
+
+# Make sure these directories exist
+if not os.path.exists("data/raw"):
+    os.makedirs("data/raw")
+if not os.path.exists("data/processed"):
+    os.makedirs("data/processed")
 
 def fetch_source_two_article():
     url = 'https://dailybruin.com/category/campus'
@@ -22,11 +30,25 @@ def fetch_source_two_article():
         'Referer': 'https://dailybruin.com/'
     }
     
+    def append_to_article_info(title, link, author, date):
+        '''Utility function to append article data to article_info list'''
+        article = {
+            'title': title,
+            'link': link,
+            'author': author,
+            'date': date
+        }
+        article_info.append(article)
+    
     try:
         with requests.Session() as session:
             session.headers.update(headers)
             response = session.get(url, verify=False, timeout=10)
         response.raise_for_status()
+        
+        #save raw data
+        with open('data/raw/source_two_raw_data.html', 'w', encoding='utf-8') as file:
+            file.write(response.text)
         
         soup = BeautifulSoup(response.text, 'lxml')
         vertical_cards = soup.find_all('div', class_ = 'css-1urk0hm')
@@ -62,16 +84,12 @@ def fetch_source_two_article():
                 if date_tag:
                     dates = date_tag.text.strip()
                 else: dates = 'Unknown'
-                article_info.append(titles)
-                article_info.append(links)
-                article_info.append(authors)
-                article_info.append(dates)
+                append_to_article_info(titles, links, authors, dates)
         
         
         for horiz_card in horizontal_cards:
             horiz_campus_tag = horiz_card.find('h2', class_ = 'css-5yw8gm')
             if horiz_campus_tag:
-                print(horiz_campus_tag)
                 hc_tag = horiz_campus_tag.text
                 if hc_tag == 'Campus':
                     horiz_title_tag = horiz_card.find('h1', class_ = 'css-m9vgwi')
@@ -84,8 +102,6 @@ def fetch_source_two_article():
                     if horiz_link_tag:
                         horiz_links = horiz_link_tag.get('href').strip()
                     else: horiz_links = 'Unknown'
-                    article_info.append(horiz_titles)
-                    article_info.append(horiz_links)
                 
                     horiz_author_tag = horiz_card.find('h3', class_ = 'css-yoisth').find('a')
                     if horiz_author_tag:
@@ -98,11 +114,10 @@ def fetch_source_two_article():
                         horiz_dates = horiz_date_tag.text.strip()
                     else: horiz_dates = 'Unknown'
                     
-                    article_info.append(horiz_titles)
-                    article_info.append(horiz_links)
-                    article_info.append(horiz_authors)
-                    article_info.append(horiz_dates)
+                    append_to_article_info(horiz_titles, horiz_links, horiz_authors, horiz_dates)
         
+        with open('data/processed/source_two.json', 'w') as file:
+            json.dump(article_info, file, indent=4)
         
     except requests.ConnectionError:
         print('Failed to connect to website')
