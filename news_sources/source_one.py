@@ -1,6 +1,14 @@
 import requests
 from bs4 import BeautifulSoup
 import random
+import os
+import json
+
+# Make sure these directories exist
+if not os.path.exists("data/raw"):
+    os.makedirs("data/raw")
+if not os.path.exists("data/processed"):
+    os.makedirs("data/processed")
 
 def fetch_source_one_article():
     url = 'https://newuniversity.org/category/news/campus-news/'
@@ -28,6 +36,10 @@ def fetch_source_one_article():
             response = session.get(url, verify=False, timeout=10)
         response.raise_for_status()
         
+        #save raw data
+        with open('data/raw/source_one_raw_data.html', 'w', encoding='utf-8') as file:
+            file.write(response.text)
+        
         soup = BeautifulSoup(response.text, 'lxml')
         headlines = soup.find_all('div', class_ = 'td-module-meta-info td-module-meta-info-bottom')
         article_info = []
@@ -36,12 +48,17 @@ def fetch_source_one_article():
             links = headline.find('a').get('href').strip()
             authors = headline.find('span', class_ = 'td-post-author-name').find('a').text.strip()
             date = headline.find('span', class_ = 'td-post-date').find('time').text.strip()
-            article_info.append(title)
-            article_info.append(links)
-            article_info.append(authors)
-            article_info.append(date)
+            article_info.append({
+                'title': title,
+                'link': links,
+                'author': authors,
+                'date': date
+            })
+        
+       
             
-        print(article_info)
+        with open('data/processed/source_one.json', 'w') as file:
+            json.dump(article_info, file, indent=4)
         
         
     except requests.ConnectionError:

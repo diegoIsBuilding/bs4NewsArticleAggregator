@@ -1,6 +1,14 @@
 import requests
 from bs4 import BeautifulSoup
 import random
+import os
+import json
+
+# Make sure these directories exist
+if not os.path.exists("data/raw"):
+    os.makedirs("data/raw")
+if not os.path.exists("data/processed"):
+    os.makedirs("data/processed")
 
 def fetch_source_three_article():
     url = 'https://ucsdguardian.org/category/news/'
@@ -26,6 +34,10 @@ def fetch_source_three_article():
             session.headers.update(headers)
             response = session.get(url, verify=False, timeout=10)
         response.raise_for_status()
+        
+        #save raw data
+        with open('data/raw/source_three_raw_data.html', 'w', encoding='utf-8') as file:
+            file.write(response.text)
         
         soup = BeautifulSoup(response.text, 'lxml')
         news_cards = soup.find_all('div', class_ = 'catlist-tile-inner')
@@ -54,12 +66,15 @@ def fetch_source_three_article():
                     dates = news_date.text.strip()
                 else: dates = 'Unknown'
                 
-                news_card_info.append(titles)
-                news_card_info.append(links)
-                news_card_info.append(authors)
-                news_card_info.append(dates)
-        print(news_card_info)
-                
+                news_card_info.append({
+                    'title': titles,
+                    'link': links,
+                    'author': authors,
+                    'date': dates
+                })
+        
+        with open('data/processed/source_three.json', 'w') as file:
+            json.dump(news_card_info, file, indent=4) 
         
         
     except requests.ConnectionError:
