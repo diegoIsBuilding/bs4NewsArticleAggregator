@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aggregate News Scraper</title>
+    <meta name="description" content="description"/>
+    <meta name="author" content="author" />
+    <meta name="keywords" content="keywords" />
+    <link rel="shortcut icon" href="favicon.ico" type="image/vnd.microsoft.icon" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="stylesheet" href="./stylesheet.css" type="text/css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  </head>
+  <body>
+    <div class="container mt-5">
+        <h1 class="mb-4">UCI Campus News</h1>
+        {% for article in source_one %}
+            <div class="card article mb-4">
+                <div class="card-body">
+                    <h2 class="card-title"><a href="{{ article['link'] }}">{{ article['title'] }}</a></h2>
+                    <p class="card-text">By {{ article['author'] }} | {{ article['date'] }}</p>
+                </div>
+            </div>
+        {% endfor %}
+    
+        <h1 class="mb-4">UCLA Campus News</h1>
+        {% for article in source_two %}
+            <div class="card article mb-4">
+                <div class="card-body">
+                    <h2 class="card-title"><a href="{{ article['link'] }}">{{ article['title'] }}</a></h2>
+                    <p class="card-text">By {{ article['author'] }} | {{ article['date'] }}</p>
+                </div>
+            </div>
+        {% endfor %}
+    
+        <h1 class="mb-4">UCSD Campus News</h1>
+        {% for article in source_three %}
+            <div class="card article mb-4">
+                <div class="card-body">
+                    <h2 class="card-title"><a href="{{ article['link'] }}">{{ article['title'] }}</a></h2>
+                    <p class="card-text">By {{ article['author'] }} | {{ article['date'] }}</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+  </body>
+</html>
